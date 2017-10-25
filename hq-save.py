@@ -32,7 +32,8 @@ while True:
             else:
                 print '%s: File is not changed.' % now
         else:
-            print 'HQ file is not available.'
+            print '%s: HQ file is not available.' % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
         time.sleep(1)
     else:
-        print 'Market closed.'
+        print '%s: Market closed.' % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+        time.sleep(10)

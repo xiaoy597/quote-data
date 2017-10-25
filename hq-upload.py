@@ -48,6 +48,7 @@ def sftp_download(host, port, username, password, local, remote):
 def create_remote_dir(host, username, password, path):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
     ssh.connect(host, username=username, password=password, timeout=300)
 
     print 'Checking remote directory %s ...' % path
@@ -79,6 +80,11 @@ if __name__ == '__main__':
 
     while True:
         date = time.strftime('%Y%m%d', time.localtime())
-        create_remote_dir(host, username, password, remote + '/' + date)
-        sftp_upload(host, port, username, password, local, remote + '/' + date)  # 上传
-        time.sleep(6)
+
+        try:
+            create_remote_dir(host, username, password, remote + '/' + date)
+            sftp_upload(host, port, username, password, local, remote + '/' + date)  # 上传
+        except Exception, e:
+            print('Exception', e)
+
+        time.sleep(30)
