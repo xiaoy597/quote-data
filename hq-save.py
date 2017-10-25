@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import shutil
 import time
 import sys
@@ -29,4 +31,8 @@ while True:
                 modify_time = new_modify_time
             else:
                 print '%s: File is not changed.' % now
-    time.sleep(1)
+        else:
+            print 'HQ file is not available.'
+        time.sleep(1)
+    else:
+        print 'Market closed.'
