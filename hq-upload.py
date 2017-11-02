@@ -5,6 +5,7 @@ import os
 import sys
 import time
 import shutil
+import zipfile
 
 
 def sftp_upload(host, port, username, password, local, remote):
@@ -13,6 +14,7 @@ def sftp_upload(host, port, username, password, local, remote):
     sf.connect(username=username, password=password)
     sftp = paramiko.SFTPClient.from_transport(sf)
     now = time.time()
+
     try:
         if os.path.isdir(local):  # 判断本地参数是目录还是文件
             for f in os.listdir(local):  # 遍历本地目录
@@ -20,14 +22,24 @@ def sftp_upload(host, port, username, password, local, remote):
                 if os.stat(os.path.join(local, f)).st_mtime > now - 60:
                     print 'Skipping file %s ...' % os.path.join(local, f)
                     continue
-                print 'Uploading %s to %s ...' % (os.path.join(local, f), os.path.join(remote + '/' + f))
-                sftp.put(os.path.join(local, f), os.path.join(remote + '/' + f))  # 上传目录中的文件
+
                 shutil.move(os.path.join(local, f), os.path.join(backup, f))
+
+                zip_handle = zipfile.ZipFile(os.path.join(backup, f + '.zip'), 'w', zipfile.ZIP_DEFLATED)
+                zip_handle.write(os.path.join(backup, f))
+                print '%s is compressed.' % os.path.join(backup, f)
+                zip_handle.close()
+                os.remove(os.path.join(backup, f))
+
+                print 'Uploading %s to %s ...' % (os.path.join(backup, f + '.zip'), os.path.join(remote + '/' + f))
+                sftp.put(os.path.join(local, f + '.zip'), os.path.join(remote + '/' + f))  # 上传目录中的文件
+
         else:
             sftp.put(local, remote)  # 上传文件
+            pass
     except Exception, e:
         print('upload exception:', e)
-    sf.close()
+    # sf.close()
 
 
 def sftp_download(host, port, username, password, local, remote):
