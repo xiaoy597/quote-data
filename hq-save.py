@@ -6,13 +6,13 @@ import sys
 import os.path
 
 source_file_list = {
-    r'c:\tmp\mktdt00.txt': 0,
-    r'c:\tmp\sjshq.dbf': 0,
-    r'c:\tmp\SJSPHHQ.dbf': 0,
-    r'c:\tmp\SJSXX.dbf': 0,
-    r'c:\tmp\sjsxxn.dbf': 0,
-    r'c:\tmp\SJSZHHQ.dbf': 0,
-    r'c:\tmp\SJSZS.dbf': 0,
+    r'c:\hqfile\mktdt00.txt': 0,
+    r'c:\hqfile\sjshq.dbf': 0,
+    r'c:\hqfile\SJSPHHQ.dbf': 0,
+    r'c:\hqfile\SJSXX.dbf': 0,
+    r'c:\hqfile\sjsxxn.dbf': 0,
+    r'c:\hqfile\SJSZHHQ.dbf': 0,
+    r'c:\hqfile\SJSZS.dbf': 0,
 }
 
 target_dir = sys.argv[1]

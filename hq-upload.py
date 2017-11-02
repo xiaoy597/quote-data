@@ -9,7 +9,7 @@ import zipfile
 
 
 def sftp_upload(host, port, username, password, local, remote):
-    print 'Connecting to %s ...' % host
+    print '%s:  Connecting to %s ...' % (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()), host)
     sf = paramiko.Transport((host, port))
     sf.connect(username=username, password=password)
     sftp = paramiko.SFTPClient.from_transport(sf)
@@ -31,15 +31,14 @@ def sftp_upload(host, port, username, password, local, remote):
                 zip_handle.close()
                 os.remove(os.path.join(backup, f))
 
-                print 'Uploading %s to %s ...' % (os.path.join(backup, f + '.zip'), os.path.join(remote + '/' + f))
-                sftp.put(os.path.join(local, f + '.zip'), os.path.join(remote + '/' + f))  # 上传目录中的文件
+                print 'Uploading %s to %s ...' % (os.path.join(backup, f + '.zip'), os.path.join(remote + '/' + f + '.zip'))
+                sftp.put(os.path.join(backup, f + '.zip'), os.path.join(remote + '/' + f + '.zip'))  # 上传目录中的文件
 
         else:
             sftp.put(local, remote)  # 上传文件
-            pass
     except Exception, e:
         print('upload exception:', e)
-    # sf.close()
+    sf.close()
 
 
 def sftp_download(host, port, username, password, local, remote):
@@ -63,7 +62,7 @@ def create_remote_dir(host, username, password, path):
 
     ssh.connect(host, username=username, password=password, timeout=300)
 
-    print 'Checking remote directory %s ...' % path
+    print '%s: Checking remote directory %s ...' % (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()), path)
     cmd = 'ls %s' % path
     (stdin, stdout, stderr) = ssh.exec_command(cmd)
     err = stderr.readline()
@@ -99,4 +98,4 @@ if __name__ == '__main__':
         except Exception, e:
             print('Exception', e)
 
-        time.sleep(30)
+        time.sleep(300)
