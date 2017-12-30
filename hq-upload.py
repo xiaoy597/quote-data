@@ -33,6 +33,7 @@ def sftp_upload(host, port, username, password, local, remote):
 
                 print 'Uploading %s to %s ...' % (os.path.join(backup, f + '.zip'), os.path.join(remote + '/' + f + '.zip'))
                 sftp.put(os.path.join(backup, f + '.zip'), os.path.join(remote + '/' + f + '.zip'))  # 上传目录中的文件
+                os.remove(os.path.join(backup, f + '.zip'))
 
         else:
             sftp.put(local, remote)  # 上传文件
