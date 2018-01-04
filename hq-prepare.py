@@ -6,6 +6,7 @@ import time
 import shutil
 import zipfile
 import gzip
+from dbfread import DBF
 
 
 def decompress(zf):
