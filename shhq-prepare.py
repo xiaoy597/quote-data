@@ -46,33 +46,33 @@ def prepare_sh_quote(path):
         hqfile.close()
         os.unlink(dzf)
 
+        timestamp = ''
         for line in lines:
 
             line = line.replace(' ', '')
             fields = line.split('|')
 
-            if fields[0] == 'HEADER' or fields[0] == 'TRAILER':
+            if fields[0] == 'HEADER':
+                timestamp = fields[6].split('-')[1]
+                continue
+
+            if fields[0] == 'TRAILER':
                 continue
 
             sec_id = fields[1]
 
-            if fields[0] == 'MD001':
-                timestamp = fields[12]
-            elif fields[0] == 'MD002' or fields[0] == 'MD003':
-                timestamp = fields[32]
+            if fields[0] == 'MD002' or fields[0] == 'MD003':
                 line = '|'.join(fields[0:31]) + '|0.0|0.0|' + '|'.join(fields[31:])
-            else:
-                timestamp = fields[34]
 
             if sec_id in quote_map:
-                if quote_map[sec_id]['ts'] == timestamp:
+                if quote_map[sec_id] == line:
                     continue
-                else:
-                    quote_map[sec_id]['ts'] = timestamp
-            else:
-                quote_map[sec_id] = {'s_id': fields[0], 'ts': timestamp}
 
-            if quote_map[sec_id]['s_id'] == 'MD001':
+            quote_map[sec_id] = line
+
+            fields = line.split('|')
+            line = '|'.join(fields[0:-1]) + '|' + timestamp + '\n'
+            if fields[0] == 'MD001':
                 idx_f.write(line.decode('gbk').encode('utf8'))
             else:
                 sec_f.write(line.decode('gbk').encode('utf8'))
@@ -112,4 +112,3 @@ if __name__ == '__main__':
             prepare_quote_data(data_path, start_date, end_date)
         else:
             prepare_sh_quote(os.path.join(data_path, start_date))
-
