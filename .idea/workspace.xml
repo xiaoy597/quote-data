@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fc854fe6-06c4-477a-af7f-f421007350fa" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/szhq-prepare.py" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -492,7 +491,14 @@
       <option name="project" value="LOCAL" />
       <updated>1514665419952</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Add module for preparing SZSE quote data.">
+      <created>1515116103291</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1515116103291</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -535,7 +541,8 @@
     <MESSAGE value="Compress and upload backup files. The original backup files will be removed after the compressed files are uploaded." />
     <MESSAGE value="Add the processing of SZHQ files." />
     <MESSAGE value="Remove duplicated data from SSE quote data and produce data files that can be loaded into hive table." />
-    <option name="LAST_COMMIT_MESSAGE" value="Remove duplicated data from SSE quote data and produce data files that can be loaded into hive table." />
+    <MESSAGE value="Add module for preparing SZSE quote data." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add module for preparing SZSE quote data." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
