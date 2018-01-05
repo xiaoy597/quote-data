@@ -109,7 +109,7 @@ if __name__ == '__main__':
         start_date = sys.argv[2]
         if len(sys.argv) > 3:
             end_date = sys.argv[3]
+            prepare_quote_data(data_path, start_date, end_date)
         else:
-            end_date = start_date
+            prepare_sh_quote(os.path.join(data_path, start_date))
 
-        prepare_quote_data(data_path, start_date, end_date)
