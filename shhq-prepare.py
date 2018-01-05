@@ -5,8 +5,8 @@ import sys
 from myutils import decompress
 import multiprocessing as mp
 
-def gen_load_stmt(work_dir, date8):
 
+def gen_load_stmt(work_dir, date8):
     date_iso = '%s-%s-%s' % (date8[0:4], date8[4:6], date8[6:])
 
     f = open(os.path.join(work_dir, 'load_data.sql'), 'wb')
@@ -20,7 +20,6 @@ def gen_load_stmt(work_dir, date8):
 
 
 def prepare_sh_quote(path):
-
     print 'Preparing SH quote data in %s ...' % path
 
     data_dir = path
@@ -98,6 +97,19 @@ def prepare_quote_data(root_path, from_date, to_date):
 
 
 if __name__ == '__main__':
-    # prepare_quote_data(r'd:\data', '20171024', '20171231')
 
-    prepare_sh_quote(sys.argv[1])
+    if os.name != 'nt':
+        sys.path.append(os.path.join(os.environ['HOME'], 'bin'))
+
+    if len(sys.argv) < 3:
+        print 'Usage: %s <data-path> <start-date> <end-date>' % sys.argv[0]
+        exit(1)
+    else:
+        data_path = sys.argv[1]
+        start_date = sys.argv[2]
+        if len(sys.argv) > 3:
+            end_date = sys.argv[3]
+        else:
+            end_date = start_date
+
+        prepare_quote_data(data_path, start_date, end_date)

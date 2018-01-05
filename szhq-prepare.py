@@ -6,10 +6,14 @@ from dbfread import DBF
 from myutils import decompress
 import multiprocessing as mp
 
+
 def readDBF(dbf, sec_map, sec_f):
     print 'Reading rows from DBF %s ...' % dbf
 
     rows = list(DBF(dbf, encoding='gbk'))
+
+    if len(rows) < 2:
+        return
 
     header = rows[0]
 
@@ -87,6 +91,18 @@ def prepare_quote_data(root_path, from_date, to_date):
 
 
 if __name__ == '__main__':
-    prepare_quote_data(r'd:\data', '20171024', '20171231')
 
-    # prepare_sz_quote(sys.argv[1])
+    if os.name != 'nt':
+        sys.path.append(os.path.join(os.environ['HOME'], 'bin'))
+
+    if len(sys.argv) < 3:
+        print 'Usage: %s <data-path> <start-date> <end-date>' % sys.argv[0]
+        exit(1)
+    else:
+        data_path = sys.argv[1]
+        start_date = sys.argv[2]
+        if len(sys.argv) > 3:
+            end_date = sys.argv[3]
+            prepare_quote_data(data_path, start_date, end_date)
+        else:
+            prepare_sz_quote(os.path.join(data_path, start_date))
