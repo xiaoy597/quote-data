@@ -2,49 +2,11 @@
 
 import os
 import sys
-import time
-import shutil
-import zipfile
-import gzip
 from dbfread import DBF
+from myutils import decompress
+import multiprocessing as mp
 
-
-def decompress(zf):
-    print 'Decompressing %s ...' % zf
-
-    if zf.endswith('.gz'):
-        dezf = gunzip(zf)
-    else:
-        dezf = unzip(zf)
-
-    return dezf
-
-
-def gunzip(zf):
-    gz_file = gzip.GzipFile(zf)
-    dezf = os.path.basename(zf.replace(".gz", ""))
-
-    open(dezf, "w+").write(gz_file.read())
-
-    gz_file.close()
-
-    return dezf
-
-
-def unzip(zf):
-    zip_file = zipfile.ZipFile(zf)
-    zip_file.extractall()
-
-    files = os.listdir(os.path.join('tmp', 'backup'))
-
-    shutil.move(os.path.join('tmp', 'backup', files[0]), files[0])
-
-    shutil.rmtree('tmp')
-
-    return files[0]
-
-
-def readDBF(dbf):
+def readDBF(dbf, sec_map, sec_f):
     print 'Reading rows from DBF %s ...' % dbf
 
     rows = list(DBF(dbf, encoding='gbk'))
@@ -71,11 +33,10 @@ def readDBF(dbf):
         sec_f.write('%s|%s\n' % (row_str.encode('utf8'), new_ts))
 
 
-def gen_load_stmt(date8):
-
+def gen_load_stmt(work_dir, date8):
     date_iso = '%s-%s-%s' % (date8[0:4], date8[4:6], date8[6:])
 
-    f = open('load_data.sql', 'wb')
+    f = open(os.path.join(work_dir, 'load_data.sql'), 'wb')
 
     f.write("load data local inpath 'sz_sec_quote.dat' "
             "overwrite into table sdata.szse_sec_quote partition (traddate='%s');\n" % date_iso)
@@ -83,9 +44,10 @@ def gen_load_stmt(date8):
     f.close()
 
 
-if __name__ == '__main__':
+def prepare_sz_quote(path):
+    print 'Preparing SZ quote data in %s ...' % path
 
-    data_dir = sys.argv[1]
+    data_dir = path
     cur_date = os.path.basename(data_dir)
     work_dir = os.path.join(data_dir, 'work-sz')
 
@@ -97,17 +59,34 @@ if __name__ == '__main__':
     if not os.path.exists(work_dir):
         os.mkdir(work_dir)
 
-    os.chdir(work_dir)
-
-    sec_f = open('sz_sec_quote.dat', 'wb')
+    sec_f = open(os.path.join(work_dir, 'sz_sec_quote.dat'), 'wb')
 
     for zf in zip_files:
-        dzf = decompress(os.path.join(data_dir, zf))
-        readDBF(dzf)
-        os.unlink(dzf)
+        dzf = decompress(os.path.join(data_dir, zf), work_dir)
+        readDBF(os.path.join(work_dir, dzf), sec_map, sec_f)
+        os.unlink(os.path.join(work_dir, dzf))
 
     sec_f.close()
 
-    gen_load_stmt(cur_date)
+    gen_load_stmt(work_dir, cur_date)
 
     print 'Finished.'
+
+
+def prepare_quote_data(root_path, from_date, to_date):
+    pool = mp.Pool()
+
+    date_list = []
+    for date_path in os.listdir(root_path):
+        if not os.path.isdir(os.path.join(root_path, date_path)) \
+                or date_path < from_date or date_path > to_date:
+            continue
+        date_list.append(os.path.join(root_path, date_path))
+
+    pool.map(prepare_sz_quote, date_list)
+
+
+if __name__ == '__main__':
+    prepare_quote_data(r'd:\data', '20171024', '20171231')
+
+    # prepare_sz_quote(sys.argv[1])

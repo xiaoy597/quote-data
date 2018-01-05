@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/quote-data.iml" filepath="$PROJECT_DIR$/.idea/quote-data.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/shhq.iml" filepath="$PROJECT_DIR$/.idea/shhq.iml" />
     </modules>
   </component>
 </project>
