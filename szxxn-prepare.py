@@ -22,7 +22,7 @@ def readDBF(dbf, sec_map, sec_f):
     for row in rows[1:]:
         fields = []
         for f in row.keys():
-            if row[f] is None and f == 'XXDJRQ':
+            if row[f] is None and (f == 'XXQXRW' or f == 'XXDJRQ'):
                 row[f] = '1900-01-01'
             if type(row[f]) is unicode:
                 fields.append(row[f])
@@ -44,20 +44,20 @@ def gen_load_stmt(work_dir, date8):
 
     f = open(os.path.join(work_dir, 'load_data.sql'), 'wb')
 
-    f.write("load data local inpath 'sz_sec_info.dat' "
-            "overwrite into table sdata.szse_sec_info partition (traddate='%s');\n" % date_iso)
+    f.write("load data local inpath 'sz_new_sec_info.dat' "
+            "overwrite into table sdata.szse_new_sec_info partition (traddate='%s');\n" % date_iso)
 
     f.close()
 
 
-def prepare_sz_sec_info(path):
-    print 'Preparing SZ SecInfo data in %s ...' % path
+def prepare_sz_new_sec_info(path):
+    print 'Preparing SZ New SecInfo data in %s ...' % path
 
     data_dir = path
     cur_date = os.path.basename(data_dir)
-    work_dir = os.path.join(data_dir, 'work-szxx')
+    work_dir = os.path.join(data_dir, 'work-szxxn')
 
-    zip_files = sorted(filter(lambda x: x.startswith('SJSXX') and (x.endswith('.gz') or x.endswith('.zip')),
+    zip_files = sorted(filter(lambda x: x.startswith('sjsxxn') and (x.endswith('.gz') or x.endswith('.zip')),
                               os.listdir(data_dir)))
 
     sec_map = {}
@@ -65,7 +65,7 @@ def prepare_sz_sec_info(path):
     if not os.path.exists(work_dir):
         os.mkdir(work_dir)
 
-    sec_f = open(os.path.join(work_dir, 'sz_sec_info.dat'), 'wb')
+    sec_f = open(os.path.join(work_dir, 'sz_new_sec_info.dat'), 'wb')
 
     for zf in zip_files:
         dzf = decompress(os.path.join(data_dir, zf), work_dir)
@@ -79,7 +79,7 @@ def prepare_sz_sec_info(path):
     print 'Finished.'
 
 
-def prepare_sec_info_data(root_path, from_date, to_date):
+def prepare_new_sec_info_data(root_path, from_date, to_date):
     pool = mp.Pool()
 
     date_list = []
@@ -89,7 +89,7 @@ def prepare_sec_info_data(root_path, from_date, to_date):
             continue
         date_list.append(os.path.join(root_path, date_path))
 
-    pool.map(prepare_sz_sec_info, date_list)
+    pool.map(prepare_sz_new_sec_info, date_list)
 
 
 if __name__ == '__main__':
@@ -105,6 +105,6 @@ if __name__ == '__main__':
         start_date = sys.argv[2]
         if len(sys.argv) > 3:
             end_date = sys.argv[3]
-            prepare_sec_info_data(data_path, start_date, end_date)
+            prepare_new_sec_info_data(data_path, start_date, end_date)
         else:
-            prepare_sz_sec_info(os.path.join(data_path, start_date))
+            prepare_sz_new_sec_info(os.path.join(data_path, start_date))
